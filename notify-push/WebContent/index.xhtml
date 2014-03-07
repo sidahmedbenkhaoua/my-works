@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<script type="text/javascript"
+		src="#{request.contextPath}/ressources/js/jquery-1.3.2.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/ressources/js/jquery.jcorners.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/ressources/js/jquery.notify.js"></script>
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/ressources/css/notify.css" />
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/ressources/css/body.css" />
+
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script>
+            var showGrowl = new WebSocket("ws://localhost:8080/notify-push/my-websocket");
+            showGrowl.onmessage = function(evt) {
+             var myTextArea = document.getElementById('zone').value;
+                $('#zone').val(myTextArea+ "\nServer Message:" +evt.data+"\n");
+                $("#zone").animate({"scrollTop": $('#zone')[0].scrollHeight}, "slow");
+            
+            	  $.notify({text: evt.data, title:'Information', icon:'#{request.contextPath}/ressources/images/dialog-information.png'});
+          	$('<audio id="chatAudio"  autoplay='loop'><source src="#{request.contextPath}/ressources/sounds/button_tiny.mp3" type="audio/mp3" /></audio>').appendTo('body');		
+            $('#chatAudio')[0].play();
+            }
+            function send(event) {
+                var input = document.getElementById("message");
+                showGrowl.send(input.value);
+                var myTextArea = document.getElementById('zone').value;
+                  $('#zone').val(myTextArea+"\n" +"My Message: "+ input.value+"\n");
+                input.value = "";
+            }
+        </script>
+</h:head>
+
+<h:body>
+	<h:form>
+
+		<div id="container"></div>
+		<textarea id="zone" class="input-xlarge" readonly="readonly"
+			style="width: 300px; height: 150px;"></textarea>
+		<h:panelGrid columns="2" cellpadding="5">
+
+			<f:facet name="footer">
+				<input type="text" value="" id="message" name="message" />
+				<h:commandButton value="Push" type="button" onclick="send(event)" />
+			</f:facet>
+		</h:panelGrid>
+	</h:form>
+
+
+</h:body>
+</html>
